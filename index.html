@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NameHunt — Startup Name & Domain Finder</title>
+  <meta name="description" content="Generate startup names and instantly check if the domain is available. Only shows names you can actually register." />
+
+  <!-- ✏️  ADSENSE: replace ca-pub-XXXXXXXXXXXXXXXXX with your publisher ID -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+  <style>
+    /* ── Reset & tokens ───────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0b0d17;
+      --surface:   #13162a;
+      --surface2:  #1b1f38;
+      --border:    #252a45;
+      --primary:   #6c63ff;
+      --primary2:  #8b84ff;
+      --success:   #22c55e;
+      --danger:    #ef4444;
+      --warn:      #f59e0b;
+      --text:      #e8eaf6;
+      --muted:     #8892b0;
+      --radius:    12px;
+      --shadow:    0 4px 24px rgba(0,0,0,.45);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Ad unit wrapper ──────────────────────────────────────────── */
+    .ad-unit {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      overflow: hidden;
+    }
+    .ad-unit ins { display: block; width: 100%; }
+
+    /* ── Top banner ad ────────────────────────────────────────────── */
+    .ad-banner {
+      width: 100%;
+      min-height: 90px;
+      padding: 4px 0;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+    .header-ad-wrap {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .page-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      grid-template-rows: auto auto auto;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .sidebar   { display: none; }
+    }
+
+    /* ── Hero / search ────────────────────────────────────────────── */
+    .hero {
+      grid-column: 1 / 2;
+      text-align: center;
+      padding: 48px 20px 36px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary), #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      max-width: 620px;
+      margin: 0 auto 16px;
+    }
+    .search-box input {
+      flex: 1;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-box input:focus { border-color: var(--primary); }
+    .search-box input::placeholder { color: var(--muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 14px 26px;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #a78bfa);
+      color: #fff;
+    }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-sm {
+      padding: 7px 13px;
+      font-size: .78rem;
+      border-radius: 7px;
+    }
+    .btn-ghost {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-buy {
+      background: linear-gradient(135deg, var(--success), #16a34a);
+      color: #fff;
+    }
+
+    /* ── TLD toggles ──────────────────────────────────────────────── */
+    .tld-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .tld-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: .85rem;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color .2s, background .2s;
+    }
+    .tld-toggle.active {
+      border-color: var(--primary);
+      background: rgba(108, 99, 255, .12);
+      color: var(--primary2);
+    }
+    .tld-toggle input { display: none; }
+
+    /* ── Keyword pills ────────────────────────────────────────────── */
+    .kw-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: .78rem;
+      font-weight: 600;
+      background: rgba(108,99,255,.15);
+      border: 1px solid rgba(108,99,255,.35);
+      color: var(--primary2);
+    }
+    .kw-label {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-right: 2px;
+    }
+
+    /* ── Progress bar ─────────────────────────────────────────────── */
+    .progress-wrap {
+      max-width: 620px;
+      margin: 0 auto 8px;
+      display: none;
+    }
+    .progress-wrap.visible { display: block; }
+    .progress-track {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #a78bfa);
+      border-radius: 99px;
+      width: 0%;
+      transition: width .3s ease;
+    }
+    .progress-label {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* ── Main content area ────────────────────────────────────────── */
+    .main-col { grid-column: 1 / 2; }
+
+    /* ── Filter bar ───────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .filter-bar span { color: var(--muted); font-size: .85rem; }
+    .tag {
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      transition: all .15s;
+    }
+    .tag.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .result-count {
+      margin-left: auto;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    /* ── Results grid ─────────────────────────────────────────────── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Result card ──────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      transition: border-color .2s, transform .15s;
+      animation: fadeIn .3s ease both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .card-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      word-break: break-all;
+    }
+    .copy-btn {
+      flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: .7rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+
+    /* quality pill */
+    .quality {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+    .quality.great  { background: rgba(34,197,94,.15);  color: #4ade80; }
+    .quality.good   { background: rgba(245,158,11,.15); color: #fbbf24; }
+    .quality.ok     { background: rgba(148,163,184,.1); color: var(--muted); }
+
+    /* TLD rows */
+    .tld-list { display: flex; flex-direction: column; gap: 7px; }
+    .tld-row-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--surface2);
+      font-size: .82rem;
+    }
+    .tld-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tld-dot.available { background: var(--success); }
+    .tld-dot.taken     { background: var(--danger); }
+    .tld-dot.checking  { background: var(--warn); animation: pulse 1s infinite; }
+    .tld-dot.unknown   { background: var(--muted); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .tld-name { font-weight: 600; min-width: 52px; }
+    .tld-status { color: var(--muted); flex: 1; }
+    .tld-status.available { color: var(--success); }
+    .tld-status.taken     { color: var(--danger); }
+
+    .tld-actions { display: flex; gap: 5px; margin-left: auto; }
+
+    /* ── Card footer links ────────────────────────────────────────── */
+    .card-footer {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      align-items: center;
+    }
+
+    /* ── Brand warning badge ──────────────────────────────────────── */
+    .brand-warn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: rgba(245,158,11,.15);
+      color: #fbbf24;
+      white-space: nowrap;
+    }
+
+    /* ── Trademark dropdown ───────────────────────────────────────── */
+    .tm-wrap { position: relative; }
+    .tm-dropdown {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px;
+      min-width: 230px;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .tm-wrap.open .tm-dropdown { display: block; }
+    .tm-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: .8rem;
+      color: var(--text);
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .tm-dropdown a:hover { background: var(--border); }
+    .tm-dropdown .tm-flag { font-size: 1rem; }
+
+    /* ── Sidebar ──────────────────────────────────────────────────── */
+    .sidebar {
+      grid-column: 2;
+      grid-row: 1 / 4;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sidebar-ad {
+      min-height: 600px;
+      width: 100%;
+    }
+
+    /* ── Inline ad (between result rows) ─────────────────────────── */
+    .inline-ad {
+      grid-column: 1 / -1;
+      min-height: 90px;
+      width: 100%;
+    }
+
+    /* ── Empty / loading states ───────────────────────────────────── */
+    .state-placeholder {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .state-placeholder svg {
+      opacity: .25;
+      margin-bottom: 16px;
+    }
+    .state-placeholder h3 { font-size: 1.1rem; margin-bottom: 6px; color: var(--text); opacity: .6; }
+
+    /* ── Info box ─────────────────────────────────────────────────── */
+    .info-box {
+      background: rgba(108,99,255,.08);
+      border: 1px solid rgba(108,99,255,.25);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 4px;
+    }
+    .info-box strong { color: var(--primary2); }
+
+    /* ── Generate more button ─────────────────────────────────────── */
+    .more-wrap {
+      text-align: center;
+      margin-top: 28px;
+    }
+    .btn-more {
+      background: var(--surface);
+      border: 1.5px solid var(--primary);
+      color: var(--primary2);
+      font-weight: 700;
+      padding: 13px 32px;
+      border-radius: 10px;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .btn-more:hover  { background: rgba(108,99,255,.12); }
+    .btn-more:active { transform: scale(.97); }
+    .btn-more:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 24px 20px;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════ HEADER ════════════════════════════════ -->
+<header class="site-header">
+  <div class="logo">⚡ NameHunt</div>
+  <div class="header-ad-wrap">
+    <div class="ad-unit ad-banner">
+      <!-- ✏️  ADSENSE BANNER 728×90 — replace data-ad-client & data-ad-slot -->
+      <ins class="adsbygoogle"
+           style="display:block;width:100%;height:90px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX"
+           data-ad-format="horizontal"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ PAGE ══════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- ── HERO ────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <h1>Find a startup name<br><span>nobody else has taken</span></h1>
+    <p>Enter a keyword or idea. We generate names, check domain availability live on the internet, and only show you names you can actually register.</p>
+
+    <div class="search-box">
+      <input id="kwInput" type="text"
+             placeholder="e.g. fast delivery, AI tutor, green finance…"
+             maxlength="80"
+             autocomplete="off" />
+      <button class="btn btn-primary" id="searchBtn" onclick="startSearch()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+             viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Hunt Names
+      </button>
+    </div>
+
+    <!-- TLD selector -->
+    <div class="tld-row" id="tldRow">
+      <label class="tld-toggle active"><input type="checkbox" value="com" checked> .com</label>
+      <label class="tld-toggle active"><input type="checkbox" value="io"  checked> .io</label>
+      <label class="tld-toggle active"><input type="checkbox" value="ai"  checked> .ai</label>
+      <label class="tld-toggle active"><input type="checkbox" value="co"  checked> .co</label>
+      <label class="tld-toggle"><input type="checkbox" value="app"> .app</label>
+      <label class="tld-toggle"><input type="checkbox" value="dev"> .dev</label>
+      <label class="tld-toggle"><input type="checkbox" value="xyz"> .xyz</label>
+    </div>
+
+    <!-- Extracted keywords -->
+    <div id="kwPills" style="display:none;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label" id="progressLabel">Checking domains…</div>
+    </div>
+  </section>
+
+  <!-- ── MAIN COLUMN ──────────────────────────────────────────────── -->
+  <main class="main-col">
+
+    <!-- filter bar (hidden until results exist) -->
+    <div class="filter-bar" id="filterBar" style="display:none">
+      <span>Show:</span>
+      <div class="tag active" data-filter="all"    onclick="setFilter('all')">All</div>
+      <div class="tag"        data-filter="has-com" onclick="setFilter('has-com')">.com available</div>
+      <div class="tag"        data-filter="short"  onclick="setFilter('short')">≤ 7 chars</div>
+      <div class="tag"        data-filter="great"  onclick="setFilter('great')">High quality</div>
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <!-- placeholder lives outside the grid so grid.innerHTML='' never destroys it -->
+    <div class="state-placeholder" id="placeholder">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.5">
+        <path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+      </svg>
+      <h3>Enter a keyword to get started</h3>
+      <p>We'll generate names and check availability across the internet in real time.</p>
+    </div>
+
+    <div class="results-grid" id="resultsGrid"></div>
+
+    <!-- inline ad after results -->
+    <div class="ad-unit inline-ad" id="inlineAd" style="margin-top:28px;display:none">
+      <!-- ✏️  ADSENSE IN-FEED — replace data-ad-client & data-ad-slot -->
+      <ins class="adsbygoogle"
+           style="display:block;width:100%;height:90px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX"
+           data-ad-format="horizontal"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <!-- Generate more -->
+    <div class="more-wrap" id="moreWrap" style="display:none">
+      <button class="btn-more" id="moreBtn" onclick="generateMore()">
+        ↻ Generate More Names
+      </button>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:8px" id="moreHint">
+        Each batch uses Claude to generate fresh ideas — never repeats a name already shown
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:20px">
+      <strong>How it works:</strong> Claude generates creative names from your description.
+      Each domain is then queried live via Cloudflare DNS — only names with available domains are shown.
+      Always confirm at a registrar before committing to a name.
+    </div>
+
+  </main>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="ad-unit sidebar-ad">
+      <!-- ✏️  ADSENSE SIDEBAR 300×600 — replace data-ad-client & data-ad-slot -->
+      <ins class="adsbygoogle"
+           style="display:block;width:300px;height:600px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX"
+           data-ad-format="vertical"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </aside>
+
+</div><!-- /page-wrap -->
+
+<footer class="site-footer">
+  NameHunt — domain availability checked live via DNS. Not affiliated with any registrar.
+</footer>
+
+<!-- ═══════════════════════ SCRIPT ════════════════════════════════ -->
+<script>
+"use strict";
+
+/* ── TLD toggles ──────────────────────────────────────────────────── */
+document.querySelectorAll('.tld-toggle').forEach(label => {
+  label.addEventListener('click', () => {
+    label.classList.toggle('active');
+  });
+});
+
+function getSelectedTlds() {
+  return [...document.querySelectorAll('.tld-toggle.active input')]
+    .map(i => i.value);
+}
+
+/* ── Claude name generation (via /api/generate serverless proxy) ──── */
+let seenNames = new Set();
+let lastInput  = '';
+
+async function generateWithClaude(input, previousNames = []) {
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input, previousNames: [...previousNames] })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error || `Server error ${res.status}`);
+  }
+
+  const { names = [] } = await res.json();
+  return names.filter(n => !seenNames.has(n));
+}
+
+/* ── Quality score ────────────────────────────────────────────────── */
+function scoreQuality(name) {
+  let score = 0;
+  if (name.length <= 6)  score += 3;
+  else if (name.length <= 9) score += 1;
+
+  /* vowel ratio — more vowels = more pronounceable */
+  const vowels = (name.match(/[aeiou]/g) || []).length;
+  if (vowels / name.length >= 0.3) score += 2;
+
+  /* no triple-consonant run */
+  if (!/[bcdfghjklmnpqrstvwxyz]{3,}/.test(name)) score += 1;
+
+  /* ends in common, clean suffixes */
+  if (/(?:ly|io|ai|er|en|al|ic)$/.test(name)) score += 1;
+
+  if (score >= 5) return { label: 'Great', cls: 'great' };
+  if (score >= 3) return { label: 'Good',  cls: 'good'  };
+  return           { label: 'OK',    cls: 'ok'    };
+}
+
+/* ── DNS availability check via Cloudflare DoH ────────────────────── */
+async function checkDNS(domain) {
+  try {
+    const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=NS`;
+    const res  = await fetch(url, {
+      headers: { Accept: 'application/dns-json' },
+      signal:  AbortSignal.timeout(6000)
+    });
+    if (!res.ok) return 'unknown';
+    const data = await res.json();
+    /* Status 3 = NXDOMAIN → domain does not exist → available */
+    if (data.Status === 3) return 'available';
+    if (data.Status === 0) return 'taken';
+    return 'unknown';
+  } catch { return 'unknown'; }
+}
+
+/* ── Registrar buy links ──────────────────────────────────────────── */
+function namecheapUrl(domain) {
+  return `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain)}`;
+}
+function godaddyUrl(domain) {
+  return `https://www.godaddy.com/domainsearch/find?domainToCheck=${encodeURIComponent(domain)}`;
+}
+function googleBrandUrl(name) {
+  return `https://www.google.com/search?q=%22${encodeURIComponent(name)}%22+startup+company`;
+}
+
+const TM_OFFICES = [
+  { flag: '🌍', label: 'WIPO Global (100+ countries)', url: n => `https://branddb.wipo.int/branddb/en/search.jsf?query=${encodeURIComponent(n)}&field=BN` },
+  // Americas & Oceania
+  { flag: '🇺🇸', label: 'USA — USPTO',                url: n => `https://tmsearch.uspto.gov/search/search-information?searchInput=${encodeURIComponent(n)}&searchOption=1` },
+  { flag: '🇨🇦', label: 'Canada — CIPO',              url: n => `https://www.ic.gc.ca/app/opic-cipo/trdmrks/srch/viewTrademark?id=${encodeURIComponent(n)}` },
+  { flag: '🇦🇺', label: 'Australia — IP Australia',   url: n => `https://search.ipaustralia.gov.au/trademarks/search/quick?s=${encodeURIComponent(n)}` },
+  // Europe
+  { flag: '🇪🇺', label: 'Europe — EUIPO',             url: n => `https://euipo.europa.eu/eSearch/#basic/1+1+1+1/100+0+0+0+PN/${encodeURIComponent(n)}` },
+  { flag: '🇬🇧', label: 'UK — IPO',                   url: n => `https://trademarks.ipo.gov.uk/ipo-tmcase/page/Results/1/${encodeURIComponent(n)}` },
+  // Asia
+  { flag: '🇮🇳', label: 'India — IP India',           url: n => `https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx` },
+  { flag: '🇯🇵', label: 'Japan — J-PlatPat',          url: n => `https://j-platpat.inpit.go.jp/` },
+  // MENA
+  { flag: '🇦🇪', label: 'UAE — Ministry of Economy',  url: n => `https://www.moec.gov.ae/en/trademarks-search?q=${encodeURIComponent(n)}` },
+  { flag: '🇸🇦', label: 'Saudi Arabia — SAIP',        url: n => `https://saip.gov.sa/en/services/trademark-search/?q=${encodeURIComponent(n)}` },
+  { flag: '🇪🇬', label: 'Egypt — ITDA',               url: n => `http://www.itda.gov.eg/itda/trademarkSearch?q=${encodeURIComponent(n)}` },
+  { flag: '🇲🇦', label: 'Morocco — OMPIC',            url: n => `https://www.ompic.ma/fr/content/recherche-de-marques?q=${encodeURIComponent(n)}` },
+];
+
+function tmDropdownHtml(name) {
+  const links = TM_OFFICES.map(o =>
+    `<a href="${o.url(name)}" target="_blank" rel="noopener">
+       <span class="tm-flag">${o.flag}</span>${o.label}
+     </a>`
+  ).join('');
+  return `<div class="tm-wrap" id="tmwrap-${name}">
+    <button class="btn btn-sm btn-ghost" onclick="toggleTm('${name}')">™ Trademarks ▾</button>
+    <div class="tm-dropdown">${links}</div>
+  </div>`;
+}
+
+/* ── State ────────────────────────────────────────────────────────── */
+let allResults = [];       /* [{ name, quality, tlds:{com:{status,checked}} }] */
+let activeFilter = 'all';
+let running = false;
+
+/* ── Render helpers ───────────────────────────────────────────────── */
+function statusLabel(s) {
+  if (s === 'available') return 'Available';
+  if (s === 'taken')     return 'Taken';
+  if (s === 'checking')  return 'Checking…';
+  return 'Unknown';
+}
+
+function renderCard(item) {
+  const q = item.quality;
+  const tldEntries = Object.entries(item.tlds);
+
+  const tldRows = tldEntries.map(([tld, info]) => {
+    const domain = `${item.name}.${tld}`;
+    const buyBtns = info.status === 'available'
+      ? `<div class="tld-actions">
+           <a href="${namecheapUrl(domain)}" target="_blank" class="btn btn-sm btn-buy">Buy</a>
+           <a href="${godaddyUrl(domain)}"   target="_blank" class="btn btn-sm btn-ghost">GD</a>
+         </div>`
+      : '';
+    return `<div class="tld-row-item">
+      <span class="tld-dot ${info.status}"></span>
+      <span class="tld-name">.${tld}</span>
+      <span class="tld-status ${info.status}">${statusLabel(info.status)}</span>
+      ${buyBtns}
+    </div>`;
+  }).join('');
+
+  const brandWarn = item.brandExists
+    ? `<span class="brand-warn">⚠ Brand may exist</span>` : '';
+
+  return `<div class="card" id="card-${item.name}" data-name="${item.name}"
+               data-quality="${q.cls}"
+               data-has-com="${item.tlds['com']?.status === 'available' ? '1' : '0'}"
+               data-len="${item.name.length}">
+    <div class="card-top">
+      <span class="card-name">${item.name}</span>
+      <button class="copy-btn" onclick="copyName('${item.name}')">Copy</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span class="quality ${q.cls}" style="margin-bottom:0">● ${q.label}</span>
+      ${brandWarn}
+    </div>
+    <div class="tld-list">${tldRows}</div>
+    <div class="card-footer">
+      <a href="${googleBrandUrl(item.name)}" target="_blank" class="btn btn-sm btn-ghost">🔍 Google</a>
+      ${tmDropdownHtml(item.name)}
+    </div>
+  </div>`;
+}
+
+/* Render every result card into the grid (used at search start, all statuses) */
+function renderAll() {
+  const grid = document.getElementById('resultsGrid');
+  document.getElementById('placeholder').style.display = 'none';
+  grid.innerHTML = allResults.map(renderCard).join('');
+}
+
+/* Replace a single card in-place after its DNS result arrives */
+function updateCard(name) {
+  const item = allResults.find(r => r.name === name);
+  if (!item) return;
+  const existing = document.getElementById(`card-${name}`);
+  if (!existing) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderCard(item);
+  existing.replaceWith(tmp.firstChild);
+}
+
+/* Final filter pass — called once after all checks complete */
+function refreshGrid() {
+  const grid = document.getElementById('resultsGrid');
+  const placeholder = document.getElementById('placeholder');
+
+  let filtered = allResults;
+  if (activeFilter === 'has-com')
+    filtered = allResults.filter(r => r.tlds['com']?.status === 'available');
+  if (activeFilter === 'short')
+    filtered = allResults.filter(r => r.name.length <= 7);
+  if (activeFilter === 'great')
+    filtered = allResults.filter(r => r.quality.cls === 'great');
+
+  const withAvail = filtered
+    .filter(r => Object.values(r.tlds).some(t => t.status === 'available'))
+    .sort((a, b) => {
+      const avail = r => Object.values(r.tlds).filter(t => t.status === 'available').length;
+      return avail(b) - avail(a);
+    });
+
+  const ph = document.getElementById('placeholder');
+  if (withAvail.length === 0) {
+    ph.querySelector('h3').textContent = 'No available names found for this filter';
+    ph.querySelector('p').textContent  = 'Try a different keyword or select more TLDs.';
+    ph.style.display = '';
+    grid.innerHTML = '';
+    document.getElementById('resultCount').textContent = '';
+    return;
+  }
+
+  ph.style.display = 'none';
+  grid.innerHTML = withAvail.map(renderCard).join('');
+  document.getElementById('resultCount').textContent =
+    `${withAvail.length} name${withAvail.length !== 1 ? 's' : ''} found`;
+}
+
+/* ── Filter ───────────────────────────────────────────────────────── */
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.tag').forEach(t => {
+    t.classList.toggle('active', t.dataset.filter === f);
+  });
+  refreshGrid();
+}
+
+/* ── Trademark dropdown toggle ────────────────────────────────────── */
+function toggleTm(name) {
+  const wrap = document.getElementById(`tmwrap-${name}`);
+  if (!wrap) return;
+  const isOpen = wrap.classList.contains('open');
+  // close all others first
+  document.querySelectorAll('.tm-wrap.open').forEach(w => w.classList.remove('open'));
+  if (!isOpen) wrap.classList.add('open');
+}
+// close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tm-wrap')) {
+    document.querySelectorAll('.tm-wrap.open').forEach(w => w.classList.remove('open'));
+  }
+});
+
+/* ── Clearbit brand check ─────────────────────────────────────────── */
+async function checkBrandExists(name) {
+  try {
+    const res = await fetch(`https://logo.clearbit.com/${name}.com`, { signal: AbortSignal.timeout(4000) });
+    return res.ok; // 200 = logo found = brand likely exists
+  } catch { return false; }
+}
+
+/* ── Copy ─────────────────────────────────────────────────────────── */
+function copyName(name) {
+  navigator.clipboard.writeText(name).then(() => {
+    const btn = document.querySelector(`#card-${name} .copy-btn`);
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500); }
+  });
+}
+
+/* ── Shared: check + append a batch of names ─────────────────────── */
+async function runBatch(names, tlds, pb, pl, appendMode = false) {
+  /* add to global seen set */
+  names.forEach(n => seenNames.add(n));
+
+  const newItems = names.map(name => ({
+    name,
+    quality: scoreQuality(name),
+    brandExists: false,
+    tlds: Object.fromEntries(tlds.map(t => [t, { status: 'checking', checked: false }]))
+  }));
+
+  if (appendMode) {
+    allResults = [...allResults, ...newItems];
+    /* append new checking-cards to grid */
+    const grid = document.getElementById('resultsGrid');
+    grid.insertAdjacentHTML('beforeend', newItems.map(renderCard).join(''));
+  } else {
+    allResults = newItems;
+    renderAll();
+  }
+
+  /* DNS checks */
+  const total = names.length * tlds.length;
+  let done = 0;
+  const BATCH = 8;
+  for (let i = 0; i < names.length; i += BATCH) {
+    const batch = names.slice(i, i + BATCH);
+    await Promise.all(
+      batch.flatMap(name =>
+        tlds.map(async tld => {
+          const status = await checkDNS(`${name}.${tld}`);
+          const item = allResults.find(r => r.name === name);
+          if (item) item.tlds[tld] = { status, checked: true };
+          done++;
+          pb.style.width = Math.round((done / total) * 90) + '%';
+          pl.textContent = `Checking… ${done}/${total} domains`;
+          updateCard(name);
+        })
+      )
+    );
+  }
+
+  /* Clearbit brand checks */
+  pb.style.width = '95%';
+  pl.textContent = 'Checking brand names…';
+  await Promise.all(
+    newItems.map(async item => {
+      item.brandExists = await checkBrandExists(item.name);
+      updateCard(item.name);
+    })
+  );
+
+  pb.style.width = '100%';
+}
+
+/* ── Main search ──────────────────────────────────────────────────── */
+async function startSearch() {
+  const input = document.getElementById('kwInput').value.trim();
+  if (!input || running) return;
+
+  const tlds = getSelectedTlds();
+  if (tlds.length === 0) { alert('Select at least one TLD.'); return; }
+
+  running = true;
+  lastInput = input;
+  seenNames = new Set();
+  allResults = [];
+
+  document.getElementById('searchBtn').disabled = true;
+  document.getElementById('moreBtn').disabled   = true;
+  document.getElementById('moreWrap').style.display = 'none';
+  document.getElementById('filterBar').style.display = 'none';
+  document.getElementById('inlineAd').style.display  = 'none';
+  document.getElementById('kwPills').style.display   = 'none';
+
+  const grid = document.getElementById('resultsGrid');
+  grid.innerHTML = '';
+  const ph = document.getElementById('placeholder');
+  ph.querySelector('h3').textContent = 'Asking Claude for name ideas…';
+  ph.querySelector('p').textContent  = 'This takes a few seconds.';
+  ph.style.display = '';
+
+  const pw = document.getElementById('progressWrap');
+  const pb = document.getElementById('progressBar');
+  const pl = document.getElementById('progressLabel');
+  pw.classList.add('visible');
+  pb.style.width = '5%';
+  pl.textContent = 'Generating names with Claude…';
+
+  let names;
+  try {
+    names = await generateWithClaude(input, []);
+  } catch (e) {
+    pw.classList.remove('visible');
+    running = false;
+    document.getElementById('searchBtn').disabled = false;
+    alert('Error: ' + e.message);
+    return;
+  }
+
+  if (names.length === 0) {
+    ph.querySelector('h3').textContent = 'Claude returned no usable names';
+    ph.querySelector('p').textContent  = 'Try rephrasing your description.';
+    pw.classList.remove('visible');
+    running = false;
+    document.getElementById('searchBtn').disabled = false;
+    return;
+  }
+
+  pb.style.width = '10%';
+  ph.style.display = 'none';
+  document.getElementById('filterBar').style.display = 'flex';
+
+  await runBatch(names, tlds, pb, pl, false);
+
+  pl.textContent = 'Done!';
+  setTimeout(() => pw.classList.remove('visible'), 1200);
+
+  running = false;
+  document.getElementById('searchBtn').disabled = false;
+  document.getElementById('moreBtn').disabled   = false;
+  document.getElementById('moreWrap').style.display = 'block';
+  document.getElementById('inlineAd').style.display = 'block';
+  refreshGrid();
+}
+
+/* ── Generate more ────────────────────────────────────────────────── */
+async function generateMore() {
+  if (running || !lastInput) return;
+
+  const tlds = getSelectedTlds();
+  running = true;
+  document.getElementById('moreBtn').disabled   = true;
+  document.getElementById('searchBtn').disabled = true;
+
+  const pw = document.getElementById('progressWrap');
+  const pb = document.getElementById('progressBar');
+  const pl = document.getElementById('progressLabel');
+  pw.classList.add('visible');
+  pb.style.width = '5%';
+  pl.textContent = 'Asking Claude for more ideas…';
+
+  let names;
+  try {
+    names = await generateWithClaude(lastInput, [...seenNames]);
+  } catch (e) {
+    pw.classList.remove('visible');
+    running = false;
+    document.getElementById('moreBtn').disabled   = false;
+    document.getElementById('searchBtn').disabled = false;
+    alert('Claude API error: ' + e.message);
+    return;
+  }
+
+  if (names.length === 0) {
+    pl.textContent = 'No new names — try changing your description.';
+    setTimeout(() => pw.classList.remove('visible'), 2000);
+    running = false;
+    document.getElementById('moreBtn').disabled   = false;
+    document.getElementById('searchBtn').disabled = false;
+    return;
+  }
+
+  pb.style.width = '10%';
+  await runBatch(names, tlds, pb, pl, true); /* append */
+
+  pl.textContent = 'Done!';
+  setTimeout(() => pw.classList.remove('visible'), 1200);
+
+  running = false;
+  document.getElementById('moreBtn').disabled   = false;
+  document.getElementById('searchBtn').disabled = false;
+  refreshGrid();
+}
+
+/* ── Enter key ────────────────────────────────────────────────────── */
+document.getElementById('kwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startSearch();
+});
+</script>
+
+</body>
+</html>
