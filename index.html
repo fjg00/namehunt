@@ -574,8 +574,8 @@
     <!-- filter bar (hidden until results exist) -->
     <div class="filter-bar" id="filterBar" style="display:none">
       <span>Show:</span>
-      <div class="tag active" data-filter="all"    onclick="setFilter('all')">All</div>
-      <div class="tag"        data-filter="has-com" onclick="setFilter('has-com')">.com available</div>
+      <div class="tag"        data-filter="all"     onclick="setFilter('all')">All</div>
+      <div class="tag active" data-filter="has-com" onclick="setFilter('has-com')">.com available</div>
       <div class="tag"        data-filter="short"  onclick="setFilter('short')">≤ 7 chars</div>
       <div class="tag"        data-filter="great"  onclick="setFilter('great')">High quality</div>
       <div class="result-count" id="resultCount"></div>
@@ -760,7 +760,7 @@ function tmDropdownHtml(name) {
 
 /* ── State ────────────────────────────────────────────────────────── */
 let allResults = [];       /* [{ name, quality, tlds:{com:{status,checked}} }] */
-let activeFilter = 'all';
+let activeFilter = 'has-com';
 let running = false;
 
 /* ── Render helpers ───────────────────────────────────────────────── */
